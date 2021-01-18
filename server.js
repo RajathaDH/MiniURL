@@ -4,6 +4,7 @@ if(process.env.NODE_ENV != 'production'){
 
 const express = require('express');
 const mongoose  = require('mongoose');
+const { nanoid } = require('nanoid');
 
 const MiniURL = require('./models/MiniURL');
 
@@ -27,26 +28,32 @@ app.get('/', (req, res) => {
 app.post('/shorten', async (req, res) => {
     const { fullUrl, prefferedUrl } = req.body;
 
-    if(!fullUrl || !prefferedUrl) return res.render('index', { error: 'Enter all the details.' });
+    if(!fullUrl) return res.render('index', { error: 'Enter a valid URL.' });
 
-    if(prefferedUrl){
-        try {
+    try {
+        let miniUrl;
+        if(prefferedUrl){
             const existingUrl = await MiniURL.findOne({ shortUrl: prefferedUrl });
 
             if(existingUrl) return res.render('index', { error: 'MiniURL already in use.' });
             
-            const miniUrl = new MiniURL({
+            miniUrl = new MiniURL({
                 fullUrl: fullUrl,
                 shortUrl: prefferedUrl
             });
-    
-            const newMiniUrl = await miniUrl.save();
-
-            res.render('index', { message: 'URL has been shortened.' });
-        } catch(err) {
-            console.error(err);
-            res.render('index', { error: 'Internal error.' });
+        } else {
+            miniUrl = new MiniURL({
+                fullUrl: fullUrl,
+                shortUrl: nanoid(4)
+            });
         }
+
+        const newMiniUrl = await miniUrl.save();
+
+        res.render('index', { message: 'URL has been shortened.' });
+    } catch(err) {
+        console.error(err);
+        res.render('index', { error: 'Internal error.' });
     }
 });
 
