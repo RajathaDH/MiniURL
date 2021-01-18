@@ -1,0 +1,27 @@
+{
+  "name": "miniurl",
+  "version": "1.0.0",
+  "description": "A URL shortener.",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RajathaDH/MiniURL.git"
+  },
+  "author": "Rajatha Haputhanthri",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/RajathaDH/MiniURL/issues"
+  },
+  "homepage": "https://github.com/RajathaDH/MiniURL#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "mongoose": "^5.11.12"
+  },
+  "devDependencies": {
+    "dotenv": "^8.2.0",
+    "nodemon": "^2.0.7"
+  }
+}
