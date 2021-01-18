@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="/js/main.js" defer></script>
+    <title>MiniURL</title>
+</head>
+<body>
+    <form action="/shorten" method="POST">
+        <input type="url" name="fullUrl">
+        <input type="url" name="prefferedUrl">
+        <button type="submit">Submit</button>
+    </form>
+
+    <% if(typeof error != 'undefined'){ %>
+        <%= error %>
+    <% } %>
+
+    <% if(typeof message != 'undefined'){ %>
+        <%= message %>
+    <% } %>
+</body>
+</html>
