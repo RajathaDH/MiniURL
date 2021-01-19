@@ -57,6 +57,20 @@ app.post('/shorten', async (req, res) => {
     }
 });
 
+app.get('/:id', async (req, res) => {
+    const shortUrl = req.params.id;
+
+    const miniUrl = await MiniURL.findOne({ shortUrl });
+
+    if(miniUrl){
+        const fullUrl = miniUrl.fullUrl;
+
+        res.redirect(fullUrl);
+    } else {
+        res.render('index', { error: 'Invalid URL.' });
+    }
+});
+
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
