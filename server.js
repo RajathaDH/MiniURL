@@ -50,7 +50,7 @@ app.post('/shorten', async (req, res) => {
 
         const newMiniUrl = await miniUrl.save();
 
-        res.render('index', { message: 'URL has been shortened.' });
+        res.render('index', { message: 'URL has been shortened.', shortUrl: miniUrl.shortUrl });
     } catch(err) {
         console.error(err);
         res.render('index', { error: 'Internal error.' });
