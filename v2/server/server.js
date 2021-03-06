@@ -4,7 +4,12 @@ if (process.env.NODE_ENV !== 'production') {
 
 const express = require('express');
 const mongoose = require('mongoose');
+const { nanoid } = require('nanoid');
+const Joi = require('joi');
 
+const MiniUrl = require('./models/MiniUrl');
+
+// database connection
 const MONGODB_URI = process.env.MONGODB_URI;
 mongoose.connect(MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => console.log('Connected to MongoDB'))
@@ -20,11 +25,49 @@ app.get('/', (req, res) => {
 });
 
 // shorten an URL
-app.post('/shorten', (req, res) => {
-    console.log(req.body);
-    res.json({});
+app.post('/shorten', async (req, res) => {
+    const { fullUrl, shortUrl } = req.body;
+
+    let urlData = {
+        fullUrl,
+        shortUrl
+    }
+
+    const urlSchema = Joi.object({
+        fullUrl: Joi.string().required().trim(),
+        shortUrl: Joi.string().trim()
+    });
+
+    try {
+        const result = urlSchema.validate(urlData);
+
+        if (result.error) {
+            return res.status(400).json({ error: 'Invalid details' });
+        }
+
+        urlData = result.value;
+
+        // generate a short URL if it is not passed
+        if (!urlData.shortUrl) {
+            urlData.shortUrl = nanoid(5);
+        }
+
+        // check if short URL already exists
+        const existingMiniUrl = await MiniUrl.findOne({ shortUrl: urlData.shortUrl });
+        if (existingMiniUrl) {
+            return res.status(400).json({ error: 'Short URL already exists' });
+        }
+
+        const newUrl = new MiniUrl(urlData);
+        const newMiniUrl = await newUrl.save();
+
+        res.status(200).json({ message: 'Success', shortUrl: newMiniUrl.shortUrl });
+    } catch(err) {
+        console.log(err);
+    }
 });
 
+// redirect to a shortened URL
 app.get('/:id', (req, res) => {
     console.log(req.params.id);
     res.json({});
