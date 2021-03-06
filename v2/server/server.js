@@ -68,9 +68,23 @@ app.post('/shorten', async (req, res) => {
 });
 
 // redirect to a shortened URL
-app.get('/:id', (req, res) => {
-    console.log(req.params.id);
-    res.json({});
+app.get('/:id', async (req, res) => {
+    const shortUrl = req.params.id;
+
+    try {
+        const miniUrl = await MiniUrl.findOne({ shortUrl });
+
+        if (miniUrl) {
+            const fullUrl = miniUrl.fullUrl;
+
+            res.redirect(fullUrl);
+        } else {
+            res.status(404).json({ message: 'Invalid url' });
+        }
+    } catch(err) {
+        console.log(err);
+        res.status(500).json({ message: 'Error' });
+    }
 });
 
 // Route not found 404 handler
