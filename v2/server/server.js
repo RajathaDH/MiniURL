@@ -62,8 +62,9 @@ app.post('/shorten', async (req, res) => {
 
         const newUrl = new MiniUrl(urlData);
         const newMiniUrl = await newUrl.save();
+        const newShortUrl = `http://localhost:3000/${newMiniUrl.shortUrl}`
 
-        res.status(200).json({ message: 'Success', shortUrl: newMiniUrl.shortUrl });
+        res.status(200).json({ message: 'Success', shortUrl: newShortUrl });
     } catch(err) {
         console.log(err);
     }

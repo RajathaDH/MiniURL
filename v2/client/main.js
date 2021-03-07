@@ -2,7 +2,8 @@ const app = {
     data() {
         return {
             fullUrl: '',
-            shortUrl: ''
+            shortUrl: '',
+            apiResponse: {}
         }
     },
     methods: {
@@ -21,8 +22,8 @@ const app = {
             });
 
             const data = await result.json();
-
-            console.log(data);
+            
+            this.apiResponse = data;
         }
     }
 }
