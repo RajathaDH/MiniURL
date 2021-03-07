@@ -4,9 +4,19 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://unpkg.com/vue@3.0.5/dist/vue.global.js" defer></script>
+    <script src="main.js" defer></script>
     <title>MiniURL</title>
 </head>
 <body>
-    
+    <div id="app">
+        <div>
+            <form @submit.prevent="minify">
+                <input type="url" name="fullUrl" id="fullUrl" v-model="fullUrl">
+                <input type="text" name="shortUrl" id="shortUrl" v-model="shortUrl">
+                <button type="submit">Minifyyyyy</button>
+            </form>
+        </div>
+    </div>
 </body>
 </html>

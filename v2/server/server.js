@@ -4,6 +4,7 @@ if (process.env.NODE_ENV !== 'production') {
 
 const express = require('express');
 const mongoose = require('mongoose');
+const cors = require('cors');
 const { nanoid } = require('nanoid');
 const Joi = require('joi');
 
@@ -19,6 +20,7 @@ const app = express();
 
 // middlewares
 app.use(express.json());
+app.use(cors());
 
 app.get('/', (req, res) => {
     res.json({ message: 'MiniURL' });
