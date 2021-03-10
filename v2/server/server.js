@@ -7,6 +7,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const { nanoid } = require('nanoid');
 const Joi = require('joi');
+const rateLimit = require('express-rate-limit');
 
 const MiniUrl = require('./models/MiniUrl');
 
@@ -22,12 +23,18 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
+const rateLimiter = rateLimit({
+    windowMs: 0.5 * 60 * 1000,
+    max: 2,
+    message: JSON.stringify({ error: 'Too many requests, try again in 30 seconds' })
+});
+
 app.get('/', (req, res) => {
     res.json({ message: 'MiniURL' });
 });
 
 // shorten an URL
-app.post('/shorten', async (req, res) => {
+app.post('/shorten', rateLimiter, async (req, res) => {
     const { fullUrl, shortUrl } = req.body;
 
     let urlData = {
