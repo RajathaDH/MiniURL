@@ -46,13 +46,14 @@ app.post('/shorten', rateLimiter, async (req, res) => {
 
     const urlSchema = Joi.object({
         fullUrl: Joi.string().required().trim(),
-        shortUrl: Joi.string().trim()
+        shortUrl: Joi.string().allow('')
     });
 
     try {
         const result = urlSchema.validate(urlData);
 
         if (result.error) {
+            console.log(result.error);
             return res.status(400).json({ error: 'Invalid details' });
         }
 
