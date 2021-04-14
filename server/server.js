@@ -11,6 +11,8 @@ const rateLimit = require('express-rate-limit');
 
 const MiniUrl = require('./models/MiniUrl');
 
+const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
+
 // database connection
 const MONGODB_URI = process.env.MONGODB_URI;
 mongoose.connect(MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
@@ -23,12 +25,12 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-//app.set('trust proxy', 1); // used when deployed to trust proxy
+//app.set('trust proxy', 1); // use when deployed to trust proxy
 
 const rateLimiter = rateLimit({
     windowMs: 0.5 * 60 * 1000,
     max: 2,
-    message: JSON.stringify({ error: 'Too many requests, try again in 30 seconds' })
+    message: JSON.stringify({ error: 'Too many requests, try again in 30 seconds.' })
 });
 
 app.get('/', (req, res) => {
@@ -54,7 +56,7 @@ app.post('/shorten', rateLimiter, async (req, res) => {
 
         if (result.error) {
             console.log(result.error);
-            return res.status(400).json({ error: 'Invalid details' });
+            return res.status(400).json({ error: 'Invalid details.' });
         }
 
         urlData = result.value;
@@ -67,12 +69,12 @@ app.post('/shorten', rateLimiter, async (req, res) => {
         // check if short URL already exists
         const existingMiniUrl = await MiniUrl.findOne({ shortUrl: urlData.shortUrl });
         if (existingMiniUrl) {
-            return res.status(400).json({ error: 'Short URL already exists' });
+            return res.status(400).json({ error: 'Short URL already exists.' });
         }
 
         const newUrl = new MiniUrl(urlData);
         const newMiniUrl = await newUrl.save();
-        const newShortUrl = `http://localhost:3000/${newMiniUrl.shortUrl}`;
+        const newShortUrl = `${BASE_URL}/${newMiniUrl.shortUrl}`;
 
         res.status(200).json({ message: 'Success', shortUrl: newShortUrl });
     } catch(err) {

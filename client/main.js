@@ -1,3 +1,5 @@
+const API_URL = 'http://localhost:3000';
+
 const app = {
     data() {
         return {
@@ -13,7 +15,7 @@ const app = {
                 shortUrl: this.shortUrl
             };
 
-            const result = await fetch('http://localhost:3000/shorten', {
+            const result = await fetch(`${API_URL}/shorten`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
