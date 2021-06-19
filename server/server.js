@@ -5,13 +5,9 @@ if (process.env.NODE_ENV !== 'production') {
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const { nanoid } = require('nanoid');
-const Joi = require('joi');
 const rateLimit = require('express-rate-limit');
 
-const MiniUrl = require('./models/MiniUrl');
-
-const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
+const miniurlController = require('./controllers/miniurl');
 
 // database connection
 const MONGODB_URI = process.env.MONGODB_URI;
@@ -38,69 +34,10 @@ app.get('/', (req, res) => {
 });
 
 // shorten an URL
-app.post('/shorten', rateLimiter, async (req, res) => {
-    const { fullUrl, shortUrl } = req.body;
-
-    let urlData = {
-        fullUrl,
-        shortUrl
-    }
-
-    const urlSchema = Joi.object({
-        fullUrl: Joi.string().required().trim(),
-        shortUrl: Joi.string().allow('')
-    });
-
-    try {
-        const result = urlSchema.validate(urlData);
-
-        if (result.error) {
-            console.log(result.error);
-            return res.status(400).json({ error: 'Invalid details.' });
-        }
-
-        urlData = result.value;
-
-        // generate a short URL if it is not passed
-        if (!urlData.shortUrl) {
-            urlData.shortUrl = nanoid(5);
-        }
-
-        // check if short URL already exists
-        const existingMiniUrl = await MiniUrl.findOne({ shortUrl: urlData.shortUrl });
-        if (existingMiniUrl) {
-            return res.status(400).json({ error: 'Short URL already exists.' });
-        }
-
-        const newUrl = new MiniUrl(urlData);
-        const newMiniUrl = await newUrl.save();
-        const newShortUrl = `${BASE_URL}/${newMiniUrl.shortUrl}`;
-
-        res.status(200).json({ message: 'Success', shortUrl: newShortUrl });
-    } catch(err) {
-        console.log(err);
-    }
-});
+app.post('/shorten', rateLimiter, miniurlController.shortenUrl);
 
 // redirect to a shortened URL
-app.get('/:id', async (req, res) => {
-    const shortUrl = req.params.id;
-
-    try {
-        const miniUrl = await MiniUrl.findOne({ shortUrl });
-
-        if (miniUrl) {
-            const fullUrl = miniUrl.fullUrl;
-
-            res.redirect(fullUrl);
-        } else {
-            res.status(404).json({ message: 'Invalid url' });
-        }
-    } catch(err) {
-        console.log(err);
-        res.status(500).json({ message: 'Error' });
-    }
-});
+app.get('/:id', miniurlController.redirectMiniurl);
 
 // Route not found 404 handler
 app.use((req, res) => {
